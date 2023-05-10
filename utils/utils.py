@@ -65,17 +65,17 @@ def draw(indexes, variants):
     ax.legend(loc='upper left')             
     plt.show()
 
-def decoupe(data):
+def decoupe(data,gap):
     df = pd.DataFrame(data, columns=["date", "value"])
     df["date"] = pd.to_datetime(df["date"])
     min_date = df["date"].min()
     max_date = df["date"].max()
     week_slices = []
     while min_date <= max_date:
-        week_end = min_date + timedelta(days=6)
+        week_end = min_date + timedelta(days=gap-1)
         week_slice = df[(df["date"] >= min_date) & (df["date"] <= week_end)]
         week_slices.append(week_slice)
-        min_date += timedelta(days=7)
+        min_date += timedelta(days=gap)
     return week_slices
 
 

@@ -10,7 +10,7 @@ import datetime
 import numpy as np
 import pandas as pd
 from datetime import timedelta
-from utils import *
+from ../utils/utils import *
 import pickle
 
 url = f"https://www.scientificbeta.com/factor/proxy/indexSeries/ADU-xxES-xPx?currency=USD"

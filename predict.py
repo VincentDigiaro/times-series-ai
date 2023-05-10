@@ -1,3 +1,7 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent / 'utils'))
+
 import numpy as np
 import tensorflow as tf
 import os
@@ -11,14 +15,16 @@ import pandas as pd
 import io
 from utils import *
 from datetime import datetime, timedelta
-
-# Ouverture du fichier en mode lecture binaire
-with open('model.pkl', 'rb') as f:
-    # Chargement des données sérialisées
-    model = pickle.load(f)
+from tensorflow.keras.models import load_model
 
 
-jsonData = getDataFromUrl(f"https://www.scientificbeta.com/factor/proxy/indexSeries/ADU-xxES-xPx?currency=USD")
+
+
+model = load_model('data/model.h5')
+
+with open('data/scidata.pkl', 'rb') as f:
+    jsonData = pickle.load(f)
+
 
 indexes = [{'label': 'id'}]
 variants = [{'id':'ri', 'color': 'r'}]
@@ -41,7 +47,7 @@ for l, e in enumerate(indexes):
 
 
 xs = []
-lastDates = indexes[0][variants[0]['id']][-22:]
+lastDates = indexes[0][variants[0]['id']][-30:]
 for i , el in enumerate(lastDates):
     xs.append(round(lastDates[i][1]))
 
@@ -53,7 +59,7 @@ lastDate = pd.to_datetime(indexes[0][variants[0]['id']][-1][0])
 
 
 next_dates = []
-for i in range(1, 6):
+for i in range(1, 8):
     next_date = lastDate + timedelta(days=i)
     next_dates.append(next_date)
 
@@ -61,7 +67,10 @@ for i in range(1, 6):
 
 print(next_dates)
 print(y_pred)
-ax.plot(next_dates, y_pred[0], 'g',)
+#pdb.set_trace()
+prediction = np.insert(y_pred[0], 0,  indexes[0][variants[0]['id']][-1][1])
+
+ax.plot([lastDate]+next_dates,prediction, 'g',)
 
 ax.legend(loc='upper left')
 plt.show()

@@ -6,7 +6,7 @@ import json
 import datetime as dt
 import pandas as pd
 import io
-from utils import *
+from ../utils import *
 
 
 json = getDataFromUrl(f"https://www.scientificbeta.com/factor/proxy/indexSeries/ADU-xxES-xPx?currency=USD")
