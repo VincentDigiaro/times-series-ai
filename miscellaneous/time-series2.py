@@ -10,7 +10,7 @@ import datetime
 import numpy as np
 import pandas as pd
 from datetime import timedelta
-from ../utils/utils import *
+import utils as ut
 import pickle
 
 url = f"https://www.scientificbeta.com/factor/proxy/indexSeries/ADU-xxES-xPx?currency=USD"
@@ -38,12 +38,12 @@ for i, el in enumerate(indexes):
         indexes[i][variants[j]['id']] = tab
 
 
-decoupe = decoupe(indexes[0][variants[0]['id']])
+decoupe = ut.decoupe(indexes[0][variants[0]['id']])
 dataSet = []
 for i, el in enumerate(decoupe):
-    pv = getPreviousTime(indexes[0][variants[0]['id']], decoupe[i].iloc[0].date,30)
+    pv = ut.getPreviousTime(indexes[0][variants[0]['id']], decoupe[i].iloc[0].date,ut.INPUT_DIMENSION)
     # if pv.values.shape[0] > 10:
-    dataSet.append([ replaceDate(pv.values), cleanDate(decoupe[i].values)])
+    dataSet.append([ ut.replaceDate(pv.values), ut.cleanDate(decoupe[i].values)])
 
 
 

@@ -8,65 +8,49 @@ import numpy as np
 import requests
 import json
 import warnings
+import os
 from urllib3.exceptions import InsecureRequestWarning
+import random
+from sklearn.preprocessing import MinMaxScaler
 
-def build_data(data_weekly, data_monthly):
-
-   # print(data_monthly)
-    #print(data_weekly)
-    df_weekly = pd.DataFrame(data_weekly, columns=["date", "value"])
-    df_weekly["date"] = pd.to_datetime(df_weekly["date"])
-
-    df_monthly = pd.DataFrame(data_monthly, columns=["date", "value"])
-    df_monthly["date"] = pd.to_datetime(df_monthly["date"])
+ZEROING = False
+INPUT_DIMENSION = 600
+OUTPUT_DIMENSION = 150
 
 
-    def get_previous_month(date):
-        return date - relativedelta(months=1)
+def normaliseSeries(consolidateSeries):
+  
+    # Initialisez le scaler
+    scaler = MinMaxScaler()
 
-    result = []
+    # Créer une nouvelle liste pour stocker les séries normalisées
+    scaled_series_list = []
 
-    for index, row in df_weekly.iterrows():
-        week_date = row["date"]
-        previous_month_date = get_previous_month(week_date)
-        previous_month_date = previous_month_date.replace(day=1)
-        
-        previous_month_data = df_monthly[df_monthly["date"] == previous_month_date]
-        
-        if not previous_month_data.empty:
-            previous_month_value = previous_month_data["value"].iloc[0]
-        else:
-            previous_month_value = None
-        
-        result.append({"week_date": week_date, "week_value": row["value"], "previous_month_date": previous_month_date, "previous_month_value": previous_month_value})
-
-    result_df = pd.DataFrame(result)
-    return result
+    # Itérer sur la liste de séries, adapter le scaler à chaque série et la transformer
+    for series in consolidateSeries:
+        # Remodeler les données pour le scaler
+        series_values = series.values.reshape(-1, 1)
+        scaled_values = scaler.fit_transform(series_values)
+        # Convertir les données normalisées en une série et ajouter à la liste
+        scaled_series = pd.Series(scaled_values.flatten(), index=series.index)
+        scaled_series_list.append(scaled_series)
+    return scaled_series_list
 
 
 def getPreviousTime(weekly, certain_date, days):
     #pdb.set_trace()
-    df_weekly = pd.DataFrame(weekly, columns=["date", "value"])
+    df_weekly = pd.DataFrame({'date': weekly.index, 'value': weekly.values})
     df_weekly["date"] = pd.to_datetime(df_weekly["date"])
-    
     start_date = certain_date - timedelta(days=days+1)
     end_date = certain_date - timedelta(days=1)
-    last_30_days = df_weekly[(df_weekly["date"] > start_date) & (df_weekly["date"] <= end_date)]
+    last_30_days = df_weekly[(df_weekly["date"] >= start_date) & (df_weekly["date"] < end_date)]
+ 
     return last_30_days
 
 
-def draw(indexes, variants):
-    fig, ax = plt.subplots()
-    for l, e in enumerate(indexes):
-        for i, el in enumerate(variants):
-                dates = [datetime.strptime(x, '%Y-%m-%d') for x, y in indexes[l][variants[i]['id']]]
-                valeurs = np.array([y for x, y in indexes[l][variants[i]['id']]])
-                ax.plot(dates, valeurs, color=variants[i]['color'], label=indexes[l]['label'] + '-' + variants[i]['id'])
-    ax.legend(loc='upper left')             
-    plt.show()
 
 def decoupe(data,gap):
-    df = pd.DataFrame(data, columns=["date", "value"])
+    df = pd.DataFrame({'date': data.index, 'value': data.values})
     df["date"] = pd.to_datetime(df["date"])
     min_date = df["date"].min()
     max_date = df["date"].max()
@@ -82,14 +66,14 @@ def decoupe(data,gap):
 def replaceDate(tableau):
     new = []
     for i in range(len(tableau)):
-        new.append( round(tableau[i][1]))
+        new.append( (tableau[i][1]))
         #new.append((tableau[i][0].month,tableau[i][0].weekday(), round(tableau[i][1], 2)))
     return new
 
 def cleanDate(tableau):
     new = []
     for i in range(len(tableau)):
-        new.append( round(tableau[i][1]))
+        new.append( (tableau[i][1]))
     return new
 
 
@@ -104,4 +88,36 @@ def getDataFromUrl(url):
 
 
 
+def generer_datetime_apres(debut, ):
+    date_format = "%Y-%m-%d"
+    debut_date = datetime.strptime(debut, date_format)
+    fin_date = datetime.now()
+
+    # Calculer la différence en jours entre les deux dates
+    difference = (fin_date - debut_date).days
+
+    # Générer un nombre aléatoire entre 0 et la différence
+    jours_aleatoires = random.randint(0, difference)
+
+    # Ajouter le nombre de jours aléatoires à la date de début
+    date_aleatoire = debut_date + timedelta(days=jours_aleatoires)
+
+    return date_aleatoire
+
+
+def generer_datetime_entre(debut, fin):
+    date_format = "%Y-%m-%d"
+    debut_date = datetime.strptime(debut, date_format)
+    fin_date = datetime.strptime(fin, date_format)
+
+    # Calculer la différence en jours entre les deux dates
+    difference = (fin_date - debut_date).days
+
+    # Générer un nombre aléatoire entre 0 et la différence
+    jours_aleatoires = random.randint(0, difference)
+
+    # Ajouter le nombre de jours aléatoires à la date de début
+    date_aleatoire = debut_date + timedelta(days=jours_aleatoires)
+
+    return date_aleatoire
 
