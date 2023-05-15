@@ -11,7 +11,7 @@ import pandas as pd
 import requests
 import pdb
 
-api_key = "0WKSGBXE9TW2ITV8"
+
 import yfinance as yf
 
 import pickle
@@ -21,10 +21,11 @@ import pickle
 import quandl
 
 # Set your API key
+#alphavantage api_key = "0WKSGBXE9TW2ITV8"
 quandl.ApiConfig.api_key = 'rBBh3BQLu3jW-YZxyJTt'
 
 # Get the gold price data
-dataGold = quandl.get('LBMA/GOLD', start_date='2003-01-01')
+dataGold = quandl.get('LBMA/GOLD', start_date=ut.STARTDATE)
 
 print('got gold')
 
@@ -51,10 +52,11 @@ indices = [
 
 data = {}
 for indice in indices:
-    data[indice] = ( yf.download(indice, start="2003-01-01"))
+    data[indice] = ( yf.download(indice, start=ut.STARTDATE))
 
 allSeries = [data[k]['Close'] for k in data] + [  dataGold['USD (PM)'] ]
 consolidateSeries = []
+
 
 for series in allSeries:
     # Assurez-vous que l'index est de type datetime
@@ -62,6 +64,8 @@ for series in allSeries:
     series = series.resample('D').mean()
     series = series.interpolate()
     consolidateSeries.append(series)
+
+
 
 
 

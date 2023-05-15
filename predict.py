@@ -18,32 +18,42 @@ from datetime import datetime, time, timedelta
 from tensorflow.keras.models import load_model
 
 
-nbTest = 20
+nbTest = 1
 
 
-with open('data/indices.pkl', 'rb') as f:
-    consolidateSeries = pickle.load(f)
+
+consolidateSeries = ut.getIndicesFiltered(ut.STARTDATE,ut.ENDDATE )
 
 
-consolidateSeries = ut.normaliseSeries(consolidateSeries)
 cac = consolidateSeries[0]
 
 
 
+labels = [ 
+    {'text': 'CAC 40', 'rgb': '#51CBCB'},
+    {'text': 'GOLD', 'rgb': '#FFC612'},
+    {'text': 'Dow Jones', 'rgb': '#C7254E'},
+    {'text': 'NASDAQ', 'rgb':'#B67250'},
+    {'text': 'N225', 'rgb': '#E466C4'},
+    {'text': 'Hang Seng Index', 'rgb': '#4974B7'},
+    {'text': 'CAC 40 Vincent\'s AI predictions', 'rgb': ''}
+ ]
+
+
 fig, ax = plt.subplots()
-for i,series in enumerate(consolidateSeries):
+for i,series in enumerate(ut.getAllIndices()):
 
     dates = [x for x in cac.keys()]
     
-    ax.plot(series.keys(),series.values, 'r' if i else 'y')
+    ax.plot(series.keys(),series.values, labels[i]['rgb'])
 
 
 
 
 alldata = []
 allnewDates = []
-newDate = ut.generer_datetime_entre('2005-01-10', '2005-02-10')
-for m in range(0,nbTest):
+newDate = pd.to_datetime(ut.STARTDATE) + timedelta(days= ut.INPUT_DIMENSION)
+while newDate < pd.to_datetime(ut.ENDDATE) - timedelta(days=3*ut.OUTPUT_DIMENSION):
     newDate += timedelta(days=(2*ut.OUTPUT_DIMENSION))
     allnewDates.append(newDate)
     x_data = []
@@ -55,7 +65,8 @@ for m in range(0,nbTest):
     alldata.append(x_data)
 
 
-newDate = datetime.now() - timedelta(days=1)
+
+newDate = datetime.strptime(ut.ENDDATE, '%Y-%m-%d') - timedelta(days=2)
 
 
 #pdb.set_trace()
@@ -81,7 +92,7 @@ diff = y_pred[-1][0]-adjust
 
 y_pred[-1] = [a-diff for a in y_pred[-1]]
 
-for m in range(0,nbTest +1):
+for m in range(0,len(y_pred)):
     newDates = [allnewDates[m] + timedelta(days=a) for a in range(0, len(y_pred[m]))]
    # pdb.set_trace()
     ax.plot(newDates,y_pred[m], 'g')
@@ -89,7 +100,7 @@ for m in range(0,nbTest +1):
 
 
 
-
+plt.legend([a['text'] for a in labels])
 plt.show()
 
 

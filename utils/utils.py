@@ -12,29 +12,78 @@ import os
 from urllib3.exceptions import InsecureRequestWarning
 import random
 from sklearn.preprocessing import MinMaxScaler
+import pickle
 
 ZEROING = False
 INPUT_DIMENSION = 600
 OUTPUT_DIMENSION = 150
+STARTDATE = '2003-01-01'
+ENDDATE = '2014-01-01'
+
+
+
+def getAllIndices():
+    return normaliseSeriesRelative(getIndicesRaw(STARTDATE, datetime.now() - timedelta(days=2)), STARTDATE, ENDDATE)
+
+
+def getIndicesFiltered(start, end):
+    return normaliseSeries(getIndicesRaw(start, end))
+    
+
+def getIndicesRaw(start, end):
+    start_date = pd.to_datetime(start)
+    end_date = pd.to_datetime(end)
+    with open(r'data/indices.pkl', 'rb') as f:
+        res = pickle.load(f)
+
+        cutSeries = []
+        for series in res:
+            cutSeries.append(series[(series.index >= start_date) & (series.index <= end_date)]  )
+        return cutSeries
 
 
 def normaliseSeries(consolidateSeries):
   
     # Initialisez le scaler
     scaler = MinMaxScaler()
-
-    # Créer une nouvelle liste pour stocker les séries normalisées
     scaled_series_list = []
-
-    # Itérer sur la liste de séries, adapter le scaler à chaque série et la transformer
     for series in consolidateSeries:
-        # Remodeler les données pour le scaler
         series_values = series.values.reshape(-1, 1)
         scaled_values = scaler.fit_transform(series_values)
-        # Convertir les données normalisées en une série et ajouter à la liste
         scaled_series = pd.Series(scaled_values.flatten(), index=series.index)
         scaled_series_list.append(scaled_series)
     return scaled_series_list
+
+
+
+def normaliseSeriesRelative(consolidateSeries, start_date, end_date):
+  
+    # Initialisez le scaler
+    scaler = MinMaxScaler()
+    scaled_series_list = []
+
+    # Assure-toi que les dates sont en format datetime
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+
+    for series in consolidateSeries:
+        # Restrict the series to the period of interest for fitting the scaler
+        sub_period_series = series[(series.index >= start_date) & (series.index <= end_date)]
+        sub_period_values = sub_period_series.values.reshape(-1, 1)
+
+        # Fit the scaler
+        scaler.fit(sub_period_values)
+
+        # Apply the scaler to the entire series
+        series_values = series.values.reshape(-1, 1)
+        scaled_values = scaler.transform(series_values)
+        scaled_series = pd.Series(scaled_values.flatten(), index=series.index)
+        
+        scaled_series_list.append(scaled_series)
+
+    return scaled_series_list
+
+
 
 
 def getPreviousTime(weekly, certain_date, days):

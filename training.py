@@ -32,11 +32,9 @@ y_train = np.array(y_data)
 
 
 # Définition des dimensions de l'entrée
-input_shape = (len(data[0][0]), ut.INPUT_DIMENSION)  # 3 pas de temps, 7 caractéristiques
+input_shape = (len(data[0][0]), ut.INPUT_DIMENSION)  
 
-# Création du modèle
 model = Sequential()
-
 # Ajout d'une couche LSTM
 model.add(LSTM(ut.INPUT_DIMENSION, activation='relu', input_shape=input_shape))
 model.add(Dense(ut.INPUT_DIMENSION, activation='relu'))
@@ -46,17 +44,11 @@ model.add(Dense(ut.INPUT_DIMENSION, activation='relu'))
 # Ajout d'une couche Dense pour la sortie
 model.add(Dense(ut.OUTPUT_DIMENSION))
 
-# Compilation du modèle
+
 
 model.compile(optimizer='adam', loss='mse')
 #model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])
-
-
-
-
 # Entraîner le modèle
 model.fit(x_train, y_train, epochs=200, batch_size=1000) # Modifier le nombre d'epochs et la taille du batch si nécessaire
-
-# Pour enregistrer le modèle
 model.save('data/model.h5')
 

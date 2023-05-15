@@ -19,12 +19,13 @@ import pickle
 
 
 
-with open(r'C:\Users\Digiaro\times-series-ai\times-series-ai2\data\indices.pkl', 'rb') as f:
-    consolidateSeries = pickle.load(f)
+consolidateSeries = ut.getIndicesFiltered(ut.STARTDATE,ut.ENDDATE )
+
+
+
 
 print("CREATE DATASET")
 #pdb.set_trace()
-consolidateSeries = ut.normaliseSeries(consolidateSeries)
 
 outputSerie = consolidateSeries[0]
 
