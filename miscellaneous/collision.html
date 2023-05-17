@@ -1,0 +1,138 @@
+<canvas id="gc" width="1000" height="1000"></canvas>
+<script>
+window.onload=function() {
+    canv=document.getElementById("gc");
+    ctx=canv.getContext("2d");
+	   document.addEventListener("keydown",keyPush);
+    document.addEventListener("keyup",keyRelease);
+    setInterval(game,1000/100);
+}
+
+mx=my=1000;
+nbBalls = 20
+
+
+items = [{x:50 ,y:50, vx:0, vy:0, s:30, ax:0, ay:0, m:1}, {x:450 ,y:50, vx:0, vy:0, s:30, ax:0, ay:0, m: 1}
+, {x:520 ,y:50, vx:0, vy:0, s:30, ax:0, ay:0, m: 1}, {x:1000 ,y:50, vx:0, vy:0, s:30, ax:0, ay:0, m: 1} ]
+for(var i=items.length;i<nbBalls;i++) {
+    items.push({x:mx*Math.random() ,y:my*Math.random(), vx:2*Math.random()-1, vy:2*Math.random()-1, s:30, ax:0, ay:0, m: 1})
+
+}
+function game() {
+
+    ctx.fillStyle="black";
+    ctx.fillRect(0,0,canv.width,canv.height);
+
+    ctx.fillStyle="white";
+	
+	 items[0].vx+= items[0].ax;
+    items[0].vy+= items[0].ay;
+	
+
+
+    for(var i=0;i<items.length;i++) {
+
+        if(items[i].x<0) {
+            items[i].vx*= -1;
+        }
+        if(items[i].x>mx) {
+            items[i].vx*= -1;
+        }
+        if(items[i].y<0) {
+            items[i].vy*= -1;
+        }
+        if(items[i].y>my) {
+            items[i].vy*= -1;
+        }		
+        items[i].x += items[i].vx;
+        items[i].y += items[i].vy;
+		let frotte = 1.01
+		items[i].vx/=frotte
+		items[i].vy/=frotte
+    }
+
+for(var i = 0; i < items.length; i++) {
+    for(var j = i+1; j < items.length; j++) {
+        const dx = items[i].x - items[j].x;
+        const dy = items[i].y - items[j].y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < items[i].s + items[j].s) {
+            // Calculating velocity components before collision
+            const vxBefore = items[i].vx - items[j].vx;
+            const vyBefore = items[i].vy - items[j].vy;
+
+            // Normalizing distance vectors
+            const dxNormalized = dx / distance;
+            const dyNormalized = dy / distance;
+
+            // Dot product between velocity vector and distance vector
+            const dotProduct = vxBefore * dxNormalized + vyBefore * dyNormalized;
+
+            // If the objects are moving away from each other, do nothing
+            if (dotProduct > 0) {
+                continue;
+            }
+
+            // Calculate the collision impulse
+            const collisionImpulse = 2 * dotProduct / (items[i].m + items[j].m);
+				
+            // Updating velocities according to the collision impulse
+            items[i].vx -= collisionImpulse * items[j].m * dxNormalized;
+            items[i].vy -= collisionImpulse * items[j].m * dyNormalized;
+            items[j].vx += collisionImpulse * items[i].m * dxNormalized;
+            items[j].vy += collisionImpulse * items[i].m * dyNormalized;
+        }
+    }
+
+    ctx.beginPath();
+    ctx.fillStyle = i == 0 ? "blue" : "red";
+    ctx.arc(items[i].x, items[i].y, items[i].s, 0, 2 * Math.PI);
+    ctx.fill();
+}
+
+
+}
+
+function keyPush(evt) {
+    var pow = .1
+	
+    switch(evt.keyCode) {
+        case 37:
+            items[0].ax-=pow
+            break;
+        case 38:
+            items[0].ay-=pow
+            break;
+        case 39:
+            items[0].ax+=pow
+            break;
+        case 40:
+            items[0].ay+=pow
+            break;
+		case 32:
+            items[0].vx/=2
+			items[0].vy/=2
+            break;
+    }
+}
+
+
+function keyRelease(evt) {
+    switch(evt.keyCode) {
+        case 37:
+            items[0].ax = 0
+            break;
+        case 38:
+            items[0].ay = 0
+            break;
+        case 39:
+            items[0].ax = 0
+            break;
+        case 40:
+            items[0].ay = 0
+            break;
+    }
+}
+
+</script>
