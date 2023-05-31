@@ -14,12 +14,14 @@ import random
 from sklearn.preprocessing import MinMaxScaler
 import pickle
 
-ZEROING = False
+
 INPUT_DIMENSION = 600
 OUTPUT_DIMENSION = 150
 STARTDATE = '2003-01-01'
 ENDDATE = '2014-01-01'
 
+timeSubDivision = 1
+returns = False
 
 
 def getAllIndices():
@@ -38,7 +40,10 @@ def getIndicesRaw(start, end):
 
         cutSeries = []
         for series in res:
-            cutSeries.append(series[(series.index >= start_date) & (series.index <= end_date)]  )
+            restrictedSeries = series[(series.index >= start_date) & (series.index <= end_date)] 
+            if returns:
+                restrictedSeries = restrictedSeries.pct_change()  # return of index
+            cutSeries.append( restrictedSeries )
         return cutSeries
 
 
@@ -99,6 +104,7 @@ def getPreviousTime(weekly, certain_date, days):
 
 
 def decoupe(data,gap):
+    
     df = pd.DataFrame({'date': data.index, 'value': data.values})
     df["date"] = pd.to_datetime(df["date"])
     min_date = df["date"].min()
@@ -108,21 +114,15 @@ def decoupe(data,gap):
         week_end = min_date + timedelta(days=gap-1)
         week_slice = df[(df["date"] >= min_date) & (df["date"] <= week_end)]
         week_slices.append(week_slice)
-        min_date += timedelta(days=gap)
+        min_date += timedelta(days=gap//timeSubDivision)
     return week_slices
 
-
-def replaceDate(tableau):
-    new = []
-    for i in range(len(tableau)):
-        new.append( (tableau[i][1]))
-        #new.append((tableau[i][0].month,tableau[i][0].weekday(), round(tableau[i][1], 2)))
-    return new
 
 def cleanDate(tableau):
     new = []
     for i in range(len(tableau)):
         new.append( (tableau[i][1]))
+        #new.append((tableau[i][0].month,tableau[i][0].weekday(), round(tableau[i][1], 2)))
     return new
 
 
