@@ -21,7 +21,7 @@ STARTDATE = '2003-01-01'
 ENDDATE = '2014-01-01'
 
 timeSubDivision = 3
-returns = False
+returns = True
 
 
 def getAllIndices():

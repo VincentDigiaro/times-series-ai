@@ -34,6 +34,7 @@ x_val = np.array(x_val)     # validation inputs
 y_val = np.array(y_val)     # coressponding validation outputs
 
 model = Sequential()
+
 model.add(LSTM(ut.INPUT_DIMENSION, activation='relu', input_shape=input_shape))
 model.add(Dense(ut.INPUT_DIMENSION, activation='relu'))
 model.add(Dense(ut.OUTPUT_DIMENSION))

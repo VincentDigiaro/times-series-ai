@@ -1,7 +1,6 @@
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent / 'utils'))
-import ipywidgets as widgets
 import numpy as np
 import tensorflow as tf
 import os
