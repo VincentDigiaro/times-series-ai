@@ -22,11 +22,11 @@ cac = consolidateSeries[0]
 
 labels = [ 
     {'text': 'CAC 40', 'rgb': '#51CBCB', 'active': 1},
-    {'text': 'GOLD', 'rgb': '#FFC612', 'active': 0},
-    {'text': 'Dow Jones', 'rgb': '#C7254E', 'active': 0},
-    {'text': 'NASDAQ', 'rgb':'#B67250', 'active': 0},
-    {'text': 'N225', 'rgb': '#E466C4', 'active': 0},
-    {'text': 'Hang Seng Index', 'rgb': '#4974B7', 'active': 0},
+    {'text': 'GOLD', 'rgb': '#FFC612', 'active': 1},
+    {'text': 'Dow Jones', 'rgb': '#C7254E', 'active': 1},
+    {'text': 'NASDAQ', 'rgb':'#B67250', 'active': 1},
+    {'text': 'N225', 'rgb': '#E466C4', 'active': 1},
+    {'text': 'Hang Seng Index', 'rgb': '#4974B7', 'active': 1},
     {'text': 'CAC 40 Vincent\'s AI predictions', 'active': 1}
  ]
 

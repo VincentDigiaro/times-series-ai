@@ -20,7 +20,7 @@ OUTPUT_DIMENSION = 150
 STARTDATE = '2003-01-01'
 ENDDATE = '2014-01-01'
 
-timeSubDivision = 1
+timeSubDivision = 3
 returns = False
 
 
