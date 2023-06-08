@@ -17,15 +17,16 @@ import pickle
 
 INPUT_DIMENSION = 600
 OUTPUT_DIMENSION = 150
-STARTDATE = '2003-01-01'
+STARTDATE = '2005-01-01'
 ENDDATE = '2014-01-01'
+ENDDATA = '2023-01-01'
 
-timeSubDivision = 3
+timeSubDivision = 10
 returns = True
 
 
 def getAllIndices():
-    return normaliseSeriesRelative(getIndicesRaw(STARTDATE, datetime.now() - timedelta(days=2)), STARTDATE, ENDDATE)
+    return normaliseSeriesRelative(getIndicesRaw(STARTDATE, ENDDATA), STARTDATE, ENDDATE)
 
 
 def getIndicesFiltered(start, end):
@@ -43,6 +44,8 @@ def getIndicesRaw(start, end):
             restrictedSeries = series[(series.index >= start_date) & (series.index <= end_date)] 
             if returns:
                 restrictedSeries = restrictedSeries.pct_change()  # return of index
+                restrictedSeries = (1 + restrictedSeries).cumprod() - 1
+                #restrictedSeries = restrictedSeries.pct_change()  # return of index
             cutSeries.append( restrictedSeries )
         return cutSeries
 
