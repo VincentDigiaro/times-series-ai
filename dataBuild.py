@@ -18,6 +18,13 @@ print("CREATE DATASET")
 
 consolidateSeries = ut.getIndicesFiltered(ut.STARTDATE,ut.ENDDATE )
 outputSerie = consolidateSeries[0]  # futur predicted one
+
+#consolidateSeries = [outputSerie]
+
+
+# Trouver la plus grande différence sur une période de 14 jours
+max_diff = outputSerie.rolling(window=15).apply(lambda x: x.max() - x.min(), raw=True).max()
+
 decoupe = ut.decoupe(outputSerie, ut.OUTPUT_DIMENSION) # cut in periods of ut.OUTPUT_DIMENSION, return array 
 
 data = []
@@ -29,7 +36,10 @@ for i, el in enumerate(decoupe):
             dataSet.append( ut.cleanDate(pv.values))  # we dont need the date string for training since our dates are aligned
 
     if len(dataSet) == len(consolidateSeries):
-        data.append([(dataSet), ut.cleanDate(decoupe[i].values)])  # objects used in training 
+
+        end = ut.cleanDate(decoupe[i].values)[-1]
+        start = ut.cleanDate(decoupe[i].values)[0]
+        data.append([(dataSet), (end - start)/max_diff])  # objects used in training 
    
 
 with open('data/data.txt', 'w') as f:

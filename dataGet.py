@@ -12,9 +12,18 @@ import pandas as pd
 import yfinance as yf
 import quandl
 
+
+
+
+
+
+
+
+
 print("GET DATA")
 #alphavantage api_key = "0WKSGBXE9TW2ITV8"
 quandl.ApiConfig.api_key = 'rBBh3BQLu3jW-YZxyJTt'
+fredKey = "87044f3ed1e26ef8c6a1076eb443418f"
 
 yfinanceIndexes = [                    
     "^FCHI",  # CAC 40
@@ -28,21 +37,35 @@ yfinanceIndexes = [
     #"^BSESN",  # BSE Sensex
 ]
 quandlIndexes = [
-    "LBMA/GOLD"
+    "LBMA/GOLD",
+  #  "EIA/PET_RWTC_D"
 ]
+
+
+
+dataBegin = '2000-01-01'
 
 # Get the indices data
 data = {}
 for indice in yfinanceIndexes:
-    data[indice] = ( yf.download(indice, start=ut.STARTDATE)) 
+    data[indice] = ( yf.download(indice, start=dataBegin)) 
 
 allSeries = [data[k]['Close'] for k in data] # Close = value at the end of the day
 
+#df = pd.read_csv('data/Baltic Dry Index Historical Data.csv')
+#df['Open'] = df['Open'].str.replace(',', '').astype(float)
+#open_series = pd.Series(df['Open'].values, index=pd.to_datetime(df['Date'], format='%m/%d/%Y'))
+#allSeries.append(open_series)
 
 for value in quandlIndexes:
-    dataQuandl = quandl.get(value, start_date=ut.STARTDATE)
-    print('got gold')
-    allSeries += [  dataQuandl['USD (PM)'] ]# concatenate
+    dataQuandl = quandl.get(value, start_date=dataBegin)
+    print('got', value)
+    if len(dataQuandl.keys()) == 1:
+        allSeries += [  dataQuandl ]# concatenate
+    else:
+        allSeries += [  dataQuandl['USD (PM)'] ]# concatenate
+    #pdb.set_trace()
+
 
 
 # fill the missing days in the data
@@ -52,6 +75,7 @@ for series in allSeries:
     series = series.resample('D').mean()
     series = series.interpolate()
     consolidateSeries.append(series)
+
 
 with open('data/indices.pkl', 'wb') as f:
         pickle.dump(consolidateSeries, f)

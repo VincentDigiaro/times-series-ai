@@ -15,13 +15,18 @@ from sklearn.preprocessing import MinMaxScaler
 import pickle
 
 
-INPUT_DIMENSION = 600
-OUTPUT_DIMENSION = 150
-STARTDATE = '2005-01-01'
-ENDDATE = '2014-01-01'
-ENDDATA = '2023-01-01'
+INPUT_DIMENSION = 30
+OUTPUT_DIMENSION = 14
+STARTDATE = '2013-01-01'
+ENDDATE = '2023-01-01'
+ENDDATA = '2023-03-01'
 
-timeSubDivision = 10
+STARTDATE = '2005-01-01'
+ENDDATE = '2023-06-07'
+ENDDATA = '2023-06-07'
+
+
+timeSubDivision = 3
 returns = True
 
 
@@ -34,19 +39,22 @@ def getIndicesFiltered(start, end):
     
 
 def getIndicesRaw(start, end):
-    start_date = pd.to_datetime(start)
+    start_date = pd.to_datetime(start) -  timedelta(days=1)
     end_date = pd.to_datetime(end)
     with open(r'data/indices.pkl', 'rb') as f:
         res = pickle.load(f)
 
         cutSeries = []
         for series in res:
+            series = series.rolling(window=OUTPUT_DIMENSION).mean()
             restrictedSeries = series[(series.index >= start_date) & (series.index <= end_date)] 
+            #pdb.set_trace()
             if returns:
                 restrictedSeries = restrictedSeries.pct_change()  # return of index
                 restrictedSeries = (1 + restrictedSeries).cumprod() - 1
                 #restrictedSeries = restrictedSeries.pct_change()  # return of index
-            cutSeries.append( restrictedSeries )
+            cutSeries.append( restrictedSeries[1:])
+          #  pdb.set_trace()
         return cutSeries
 
 
@@ -101,7 +109,7 @@ def getPreviousTime(weekly, certain_date, days):
     start_date = certain_date - timedelta(days=days+1)
     end_date = certain_date - timedelta(days=1)
     last_30_days = df_weekly[(df_weekly["date"] >= start_date) & (df_weekly["date"] < end_date)]
- 
+
     return last_30_days
 
 

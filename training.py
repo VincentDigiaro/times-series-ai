@@ -37,11 +37,13 @@ model = Sequential()
 
 model.add(LSTM(ut.INPUT_DIMENSION, activation='relu', input_shape=input_shape))
 model.add(Dense(ut.INPUT_DIMENSION, activation='relu'))
-model.add(Dense(ut.OUTPUT_DIMENSION))
+#model.add(Dense(ut.INPUT_DIMENSION, activation='relu'))
+model.add(Dense(1, activation='tanh'))  # change here, now the model will output a single value between -1 and 1
 
 model.compile(optimizer='adam', loss='mse', metrics=['mae'])
 
-history = model.fit(x_train, y_train, epochs=10, batch_size=10, validation_data=(x_val, y_val))
+history = model.fit(x_train, y_train, epochs=50, batch_size=10, validation_data=(x_val, y_val))
+
 model.save('data/model.h5')
 
 #model.add(Dropout(0.3))
