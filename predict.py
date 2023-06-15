@@ -23,16 +23,17 @@ max_diff = cac.rolling(window=ut.OUTPUT_DIMENSION + 1).apply(lambda x: x.max() -
 
 
 labels = [ 
-    {'text': 'CAC 40', 'rgb': '#51CBCB', 'active': 1},
+    {'text': 'SP500', 'rgb': '#51CBCB', 'active': 1},
     {'text': 'Dow Jones', 'rgb': '#C7254E', 'active': 1},
     {'text': 'NASDAQ', 'rgb':'#B67250', 'active': 1},
     {'text': 'N225', 'rgb': '#E466C4', 'active': 1},
     {'text': 'Hang Seng Index', 'rgb': '#4974B7', 'active': 1},
-   # {'text': 'BDI', 'rgb': '#000000', 'active': 1},
+    {'text': 'BDI', 'rgb': '#000000', 'active': 1},
     {'text': 'GOLD', 'rgb': '#FFC612', 'active': 1},
-   # {'text': 'GAS', 'rgb': '#2F2612', 'active': 1},
+    {'text': 'GAS', 'rgb': '#2F2612', 'active': 1},
+    {'text': 'CP', 'rgb': '#aF26ee', 'active': 1},
 
-    {'text': 'CAC 40 Vincent\'s AI predictions', 'active': 1}
+    {'text': 'SP500 Vincent\'s AI predictions', 'active': 1}
  ]
 
 

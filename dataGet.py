@@ -25,11 +25,12 @@ print("GET DATA")
 quandl.ApiConfig.api_key = 'rBBh3BQLu3jW-YZxyJTt'
 fredKey = "87044f3ed1e26ef8c6a1076eb443418f"
 
-yfinanceIndexes = [                    
-    "^FCHI",  # CAC 40
+yfinanceIndexes = [   
+    "^GSPC",  # S&P 500
+  #  "^FCHI",  # CAC 40
     "^DJI",  # Dow Jones
     "^IXIC",  # NASDAQ Composite
-    #"^GSPC",  # S&P 500
+    
     #"^FTSE",  # FTSE 100
     "^N225",  # Nikkei 225
     #"^GDAXI",  # DAX Index              
@@ -38,7 +39,7 @@ yfinanceIndexes = [
 ]
 quandlIndexes = [
     "LBMA/GOLD",
-  #  "EIA/PET_RWTC_D"
+    "EIA/PET_RWTC_D"
 ]
 
 
@@ -52,10 +53,10 @@ for indice in yfinanceIndexes:
 
 allSeries = [data[k]['Close'] for k in data] # Close = value at the end of the day
 
-#df = pd.read_csv('data/Baltic Dry Index Historical Data.csv')
-#df['Open'] = df['Open'].str.replace(',', '').astype(float)
-#open_series = pd.Series(df['Open'].values, index=pd.to_datetime(df['Date'], format='%m/%d/%Y'))
-#allSeries.append(open_series)
+df = pd.read_csv('data/Baltic Dry Index Historical Data.csv')
+df['Open'] = df['Open'].str.replace(',', '').astype(float)
+open_series = pd.Series(df['Open'].values, index=pd.to_datetime(df['Date'], format='%m/%d/%Y'))
+allSeries.append(open_series)
 
 for value in quandlIndexes:
     dataQuandl = quandl.get(value, start_date=dataBegin)
@@ -65,6 +66,32 @@ for value in quandlIndexes:
     else:
         allSeries += [  dataQuandl['USD (PM)'] ]# concatenate
     #pdb.set_trace()
+
+
+
+# Lire le fichier CSV
+df = pd.read_csv('data/CP.csv')
+df['DATE'] = pd.to_datetime(df['DATE'])
+df.set_index('DATE', inplace=True)
+series = df['CP']
+allSeries.append(series)
+
+def series_with_oldest_last_date(series_list):
+    oldest_last_date = None
+    oldest_series = None
+
+    for series in series_list:
+        last_date = series.index[0]
+        if oldest_last_date is None or last_date < oldest_last_date:
+            oldest_last_date = last_date
+            oldest_series = series
+
+    return oldest_series
+
+# Test the function
+series_list = allSeries
+oldest_series = series_with_oldest_last_date(series_list)
+print(oldest_series)
 
 
 
