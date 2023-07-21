@@ -1,6 +1,6 @@
 import subprocess
 import os 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import sys
 
 start=0

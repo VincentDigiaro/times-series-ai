@@ -42,7 +42,7 @@ model.add(Dense(1, activation='tanh'))  # change here, now the model will output
 
 model.compile(optimizer='adam', loss='mse', metrics=['mae'])
 
-history = model.fit(x_train, y_train, epochs=1000, batch_size=10, validation_data=(x_val, y_val))
+history = model.fit(x_train, y_train, epochs=10, batch_size=10, validation_data=(x_val, y_val))
 
 model.save('data/model.h5')
 

@@ -26,7 +26,7 @@ ENDDATE = '2022-01-01'
 ENDDATA = '2022-01-19'
 
 
-timeSubDivision = 3
+timeSubDivision = 1
 returns = True
 
 

@@ -55,8 +55,9 @@ allSeries = [data[k]['Close'] for k in data] # Close = value at the end of the d
 
 df = pd.read_csv('data/Baltic Dry Index Historical Data.csv')
 df['Open'] = df['Open'].str.replace(',', '').astype(float)
-open_series = pd.Series(df['Open'].values, index=pd.to_datetime(df['Date'], format='%m/%d/%Y'))
-allSeries.append(open_series)
+close_series = pd.Series(df['Open'].values, index=pd.to_datetime(df['Date'], format='%m/%d/%Y'), name='Close').astype('float64')
+close_series = close_series.iloc[::-1]
+allSeries.append(close_series)
 
 for value in quandlIndexes:
     dataQuandl = quandl.get(value, start_date=dataBegin)
@@ -92,6 +93,8 @@ def series_with_oldest_last_date(series_list):
 series_list = allSeries
 oldest_series = series_with_oldest_last_date(series_list)
 print(oldest_series)
+print('')
+print(allSeries)
 
 
 
